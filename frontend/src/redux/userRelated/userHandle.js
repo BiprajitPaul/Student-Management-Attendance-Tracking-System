@@ -19,6 +19,7 @@ export const loginUser = (fields, role) => async (dispatch) => {
     try {
         const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/${role}Login`, fields, {
             headers: { 'Content-Type': 'application/json' },
+            timeout: 10000,
         });
         if (result.data.role) {
             dispatch(authSuccess(result.data));
@@ -26,7 +27,11 @@ export const loginUser = (fields, role) => async (dispatch) => {
             dispatch(authFailed(result.data.message));
         }
     } catch (error) {
-        dispatch(authError(error));
+        if (error.response?.data?.message) {
+            dispatch(authFailed(error.response.data.message));
+        } else {
+            dispatch(authError(error));
+        }
     }
 };
 

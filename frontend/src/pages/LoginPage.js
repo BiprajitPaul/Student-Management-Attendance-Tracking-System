@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Grid, Box, Typography, Paper, Checkbox, FormControlLabel, TextField, CssBaseline, IconButton, InputAdornment, CircularProgress, Backdrop } from '@mui/material';
+import { Grid, Box, Typography, Checkbox, FormControlLabel, TextField, IconButton, InputAdornment, CircularProgress } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LightPurpleButton } from '../components/buttonStyles';
 import styled from 'styled-components';
@@ -16,7 +16,6 @@ const LoginPage = ({ role }) => {
     const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);;
 
     const [toggle, setToggle] = useState(false)
-    const [guestLoader, setGuestLoader] = useState(false)
     const [loader, setLoader] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
@@ -69,30 +68,6 @@ const LoginPage = ({ role }) => {
         if (name === 'studentName') setStudentNameError(false);
     };
 
-    const guestModeHandler = () => {
-        const password = "zxc"
-
-        if (role === "Admin") {
-            const email = "yogendra@12"
-            const fields = { email, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-        else if (role === "Student") {
-            const rollNum = "1"
-            const studentName = "Dipesh Awasthi"
-            const fields = { rollNum, studentName, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-        else if (role === "Teacher") {
-            const email = "tony@12"
-            const fields = { email, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-    }
-
     useEffect(() => {
         if (status === 'success' || currentUser !== null) {
             if (currentRole === 'Admin') {
@@ -105,17 +80,24 @@ const LoginPage = ({ role }) => {
             }
         }
         else if (status === 'failed') {
-            setMessage(response)
+            if (role === 'Admin') {
+                setMessage("You don't have access to admin panel")
+            } else {
+                setMessage(response)
+            }
             setShowPopup(true)
             setLoader(false)
         }
         else if (status === 'error') {
-            setMessage("Network Error")
+            if (role === 'Admin') {
+                setMessage("You don't have access to admin panel")
+            } else {
+                setMessage("Network Error")
+            }
             setShowPopup(true)
             setLoader(false)
-            setGuestLoader(false)
         }
-    }, [status, currentRole, navigate, error, response, currentUser]);
+    }, [status, currentRole, navigate, error, response, currentUser, role]);
 
     const roleColors = {
         Admin: '#7c4dff',
@@ -231,33 +213,8 @@ const LoginPage = ({ role }) => {
                             <CircularProgress size={24} color="inherit" />
                             : "Sign In"}
                     </LightPurpleButton>
-                    <Button
-                        fullWidth
-                        onClick={guestModeHandler}
-                        variant="outlined"
-                        sx={{ 
-                            mt: 2, 
-                            mb: 2, 
-                            py: 1.2,
-                            color: roleColor, 
-                            borderColor: `${roleColor}40`,
-                            '&:hover': { 
-                                borderColor: roleColor,
-                                backgroundColor: `${roleColor}08`
-                            }
-                        }}
-                    >
-                        Login as Guest
-                    </Button>
                 </Box>
             </LoginCard>
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={guestLoader}
-            >
-                <CircularProgress color="primary" />
-                <span style={{ marginLeft: 12 }}>Please Wait</span>
-            </Backdrop>
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </LoginContainer>
     );
