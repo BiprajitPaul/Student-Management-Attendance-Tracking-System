@@ -280,13 +280,11 @@ REACT_APP_API_URL=http://localhost:5000
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
 
-This project is licensed under the ISC License - see the LICENSE file for details.
 
 ## 👥 Authors
 
-- **Development Team** - *Initial work* - Tripura University
+- **Biprajit Paul**
 
 ## 🙏 Acknowledgments
 
